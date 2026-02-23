@@ -1,0 +1,9 @@
+{
+    "model_config_list": [],
+    "mediapipe_config_list": [
+        {
+            "name": "tiny-llama-1.1b-chat",
+            "base_path": "/models/tiny-llama-1.1b-chat"
+        }
+    ]
+}

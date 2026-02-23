@@ -1,0 +1,20 @@
+# Enforce LF line endings for all text files checked out on any platform.
+* text=auto eol=lf
+
+# Explicitly mark shell scripts to ensure they are never CRLF.
+*.sh text eol=lf
+
+# Python source files.
+*.py text eol=lf
+
+# Configuration and documentation.
+*.md text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.pbtxt text eol=lf
+*.txt text eol=lf
+*.template text eol=lf
+
+# Binary files — do not touch.
+*.bin binary
+*.xml binary
