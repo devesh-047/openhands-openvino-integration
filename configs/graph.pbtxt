@@ -1,17 +1,33 @@
 input_stream: "HTTP_REQUEST_PAYLOAD:input"
 output_stream: "HTTP_RESPONSE_PAYLOAD:output"
 
-node {
+node: {
+  name: "LLMExecutor"
   calculator: "HttpLLMCalculator"
   input_stream: "LOOPBACK:loopback"
   input_stream: "HTTP_REQUEST_PAYLOAD:input"
-  output_stream: "LOOPBACK:loopback_out"
-  output_stream: "HTTP_RESPONSE_PAYLOAD:output"
   input_side_packet: "LLM_NODE_RESOURCES:llm"
+  output_stream: "LOOPBACK:loopback"
+  output_stream: "HTTP_RESPONSE_PAYLOAD:output"
+  input_stream_info: {
+    tag_index: 'LOOPBACK:0',
+    back_edge: true
+  }
   node_options: {
-    [type.googleapis.com/mediapipe.LlmCalculatorOptions] {
-      models_path: "/models/tiny-llama-1.1b-chat"
-      cache_size: 4
+      [type.googleapis.com / mediapipe.LLMCalculatorOptions]: {
+          models_path: "/models/qwen2.5-0.5b-instruct"
+          cache_size: 1
+          max_num_batched_tokens: 256
+      }
+  }
+  input_stream_handler {
+    input_stream_handler: "SyncSetInputStreamHandler",
+    options {
+      [mediapipe.SyncSetInputStreamHandlerOptions.ext] {
+        sync_set {
+          tag_index: "LOOPBACK:0"
+        }
+      }
     }
   }
 }

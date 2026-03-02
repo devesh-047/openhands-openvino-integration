@@ -23,9 +23,10 @@ source_env
 OVMS_IMAGE="${OVMS_IMAGE:-openvino/model_server:latest}"
 OVMS_REST_PORT="${OVMS_REST_PORT:-8000}"
 OVMS_GRPC_PORT="${OVMS_GRPC_PORT:-9000}"
-MODEL_DIR="${MODEL_DIR:-${PROJECT_ROOT}/docker/models/tiny-llama-1.1b-chat}"
+MODEL_DIR="${MODEL_DIR:-${PROJECT_ROOT}/docker/models/qwen2.5-7b-instruct}"
 CONFIG_FILE="${PROJECT_ROOT}/configs/ovms_config.json"
 CONTAINER_NAME="${CONTAINER_NAME:-ovms-llm}"
+DOCKER_NETWORK="${DOCKER_NETWORK:-ovms-net}"
 
 if [[ ! -d "$MODEL_DIR" ]]; then
     echo "ERROR: Model directory not found: $MODEL_DIR" >&2
@@ -44,6 +45,9 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
     exit 1
 fi
 
+# Ensure the shared Docker network exists.
+docker network create "$DOCKER_NETWORK" >/dev/null 2>&1 || true
+
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     echo "Stopping existing container: $CONTAINER_NAME"
     docker stop "$CONTAINER_NAME" >/dev/null 2>&1 || true
@@ -56,11 +60,14 @@ echo "  REST port: $OVMS_REST_PORT"
 echo "  gRPC port: $OVMS_GRPC_PORT"
 echo "  Model dir: $MODEL_DIR"
 
+MODEL_NAME="$(basename "$MODEL_DIR")"
+
 docker run -d \
     --name "$CONTAINER_NAME" \
+    --network "$DOCKER_NETWORK" \
     -p "${OVMS_REST_PORT}:8000" \
     -p "${OVMS_GRPC_PORT}:9000" \
-    -v "$(realpath "$MODEL_DIR"):/models/tiny-llama-1.1b-chat:ro" \
+    -v "$(realpath "$MODEL_DIR"):/models/${MODEL_NAME}:ro" \
     -v "$(realpath "$CONFIG_FILE"):/config/ovms_config.json:ro" \
     "$OVMS_IMAGE" \
     --config_path /config/ovms_config.json \

@@ -32,5 +32,5 @@ def load_config() -> OVMSConfig:
     return OVMSConfig(
         host=os.getenv("OVMS_HOST", "localhost"),
         rest_port=int(os.getenv("OVMS_REST_PORT", "8000")),
-        model_name=os.getenv("OVMS_MODEL_NAME", "tiny-llama-1.1b-chat"),
+        model_name=os.getenv("OVMS_MODEL_NAME", "qwen2.5-0.5b-instruct"),
     )
