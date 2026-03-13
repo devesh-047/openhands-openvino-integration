@@ -21,19 +21,96 @@ The repository covers the full lifecycle of this integration:
 ## Architecture
 
 ```
-┌──────────────────────┐     POST /v3/chat/completions      ┌────────────────────────────┐
-│                      │  ──────────────────────────────►   │                            │
-│   OpenHands          │                                     │  OpenVINO Model Server     │
-│   (CodeActAgent UI)  │  ◄──────────────────────────────   │  (CPU Inference via        │
-│                      │       JSON / SSE stream response    │   OpenVINO Runtime)        │
-└──────────────────────┘                                     └────────────────────────────┘
-          │                                                             │
-    start_openhands.sh                                       configs/graph.pbtxt
-    LLM_BASE_URL=http://ovms-llm:8000/v3                     (MediaPipe LLM pipeline)
-    LLM_MODEL=openai/qwen2.5-0.5b-instruct                   docker/models/qwen2.5-0.5b-instruct/
+OpenHands (CodeActAgent UI)
+    │
+    │  POST /v3/chat/completions
+    ▼
+OpenVINO Model Server  (CPU inference via OpenVINO Runtime)
+    │
+    ├── configs/graph.pbtxt     (MediaPipe LLM pipeline)
+    └── docker/models/qwen2.5-0.5b-instruct/
 ```
 
-Both components run as Docker containers connected to a shared `ovms-net` bridge network, allowing name-based DNS resolution between containers.
+Both components run as Docker containers on a shared `ovms-net` bridge network. Full topology in [`docs/architecture.md`](docs/architecture.md).
+
+---
+
+## Quick Demo
+
+After completing setup (see below), verify the system in three steps:
+
+**1. Start OVMS**
+```bash
+bash scripts/deploy_ovms.sh
+```
+
+**2. Verify model is loaded**
+```bash
+curl -s http://localhost:8000/v1/config
+```
+Expected output:
+```json
+{"qwen2.5-0.5b-instruct": {"model_version_status": [{"state": "AVAILABLE"}]}}
+```
+
+**3. Run a test inference**
+```bash
+curl -s -X POST http://localhost:8000/v3/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model": "qwen2.5-0.5b-instruct", "messages": [{"role": "user", "content": "Say hello."}], "max_tokens": 20}'
+```
+You should receive a JSON response with `choices[0].message.content` containing generated text within ~10 seconds on CPU.
+
+---
+
+## Key Findings
+
+### What Works
+- OVMS correctly implements the `/v3/chat/completions` endpoint with OpenAI-compatible schema
+- Non-streaming and streaming (SSE) requests both function correctly
+- OpenHands successfully connects, issues requests, and renders responses
+- The full inference pipeline runs on CPU with no GPU requirement
+
+### Known Limitations
+- **API gaps:** `functions`/`tools` (function calling), `logprobs`, `seed`, and `response_format` are not supported by OVMS
+- **Memory ceiling:** On 8 GB WSL2, only models up to ~0.5B parameters can run alongside the OpenHands sandbox
+- **Response quality:** 0.5B parameter models cannot reliably follow the complex multi-instruction system prompt OpenHands sends per request — outputs are often hallucinated content
+
+Full details: [`docs/known_limitations.md`](docs/known_limitations.md) | [`docs/observations.md`](docs/observations.md)
+
+---
+
+## Model Benchmark Summary
+
+All three models were tested end-to-end with OpenHands on 8 GB WSL2 (CPU-only).
+
+| Model | Parameters | Context | Peak RAM | Result |
+|-------|-----------|---------|----------|--------|
+| TinyLlama-1.1B-Chat | 1.1B | 2K tokens | ~1 GB | ❌ Context too small for OpenHands system prompt |
+| Phi-3.5-mini-instruct | 3.8B | 128K tokens | ~6.3 GB | ❌ OOM crash on every inference request |
+| Qwen2.5-0.5B-Instruct | 0.5B | 32K tokens | ~1.5–2 GB | ✅ Loads and infers; outputs hallucinated on complex prompts |
+
+> **Recommended for 16 GB+ systems:** Qwen2.5-7B-Instruct INT4 (~6 GB RAM, 128K context) — capable enough to follow OpenHands' agent instructions reliably.
+
+Full per-model analysis, memory breakdowns, and performance metrics: [`docs/observations.md`](docs/observations.md)
+
+---
+
+## API Compatibility Summary
+
+OVMS implements a subset of the OpenAI Chat Completions API. Key differences:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Chat completions endpoint | ✅ | Uses `/v3` prefix instead of `/v1` |
+| Non-streaming response | ✅ | Full OpenAI schema |
+| SSE streaming | ✅ | `usage` may be absent from stream |
+| `functions` / `tools` | ❌ | Not implemented |
+| `response_format` (JSON mode) | ❌ | Not implemented |
+| `logprobs` / `seed` | ❌ | Not implemented |
+| Error response format | ⚠️ | Flat string, not nested OpenAI object |
+
+Full feature matrix with impact analysis: [`docs/openai_compatibility_notes.md`](docs/openai_compatibility_notes.md) | [`analysis/gaps_analysis.md`](analysis/gaps_analysis.md)
 
 ---
 
@@ -123,36 +200,7 @@ bash scripts/deploy_ovms.sh
 
 The script creates a Docker network (`ovms-net`), starts the container with the model mounted, and polls the `/v1/config` endpoint until the model reports `AVAILABLE`. This takes 30–90 seconds.
 
-Verify the model is loaded:
-
-```bash
-curl -s http://localhost:8000/v1/config
-```
-
-Expected output (truncated):
-```json
-{
-  "qwen2.5-0.5b-instruct": {
-    "model_version_status": [{"state": "AVAILABLE"}]
-  }
-}
-```
-
-### 4. Test direct inference
-
-Confirm inference works before involving OpenHands:
-
-```bash
-curl -s -X POST http://localhost:8000/v3/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-      "model": "qwen2.5-0.5b-instruct",
-      "messages": [{"role": "user", "content": "Say hello."}],
-      "max_tokens": 20
-  }'
-```
-
-### 5. Launch OpenHands
+### 4. Launch OpenHands
 
 ```bash
 bash scripts/start_openhands.sh
@@ -189,23 +237,6 @@ python scripts/collect_usability_metrics.py
 
 ---
 
-## Key Findings
-
-### What Works
-- OVMS correctly implements the `/v3/chat/completions` endpoint with OpenAI-compatible schema
-- Non-streaming and streaming (SSE) requests both function correctly
-- OpenHands successfully connects, issues requests, and renders responses
-- The full inference pipeline runs on CPU with no GPU requirement
-
-### Known Limitations
-- **API gaps:** `functions`/`tools` (function calling), `logprobs`, `seed`, and `response_format` are not supported by OVMS
-- **Memory ceiling:** On 8 GB WSL2, only models up to ~0.5B parameters can run alongside the OpenHands sandbox
-- **Response quality:** 0.5B parameter models cannot reliably follow the complex multi-instruction system prompt OpenHands sends per request — outputs are often hallucinated content
-
-Full details: [`docs/known_limitations.md`](docs/known_limitations.md) | [`docs/observations.md`](docs/observations.md)
-
----
-
 ## Documentation
 
 | Document | Description |
@@ -218,6 +249,16 @@ Full details: [`docs/known_limitations.md`](docs/known_limitations.md) | [`docs/
 | [`docs/observations.md`](docs/observations.md) | LLM comparison, performance metrics, final outputs |
 | [`analysis/usability_report.md`](analysis/usability_report.md) | Integration usability evaluation |
 | [`analysis/gaps_analysis.md`](analysis/gaps_analysis.md) | API gap analysis with recommendations |
+
+---
+
+## Future Work
+
+- **Hardware-aware model selection:** A tool or guide recommending models based on available RAM (e.g., 8 GB → 0.5B INT4, 16 GB → 7B INT4, 32 GB → 13B INT4)
+- **Broader model benchmarking:** Test Qwen2.5-7B, Mistral-7B, and Phi-3-mini on systems with ≥16 GB RAM
+- **Prompt compression:** Investigate system prompt summarization or token reduction techniques to make small models more viable
+- **Response normalization proxy:** Lightweight middleware to inject missing OpenAI envelope fields (`id`, `object`, `created`) and normalize error schemas
+- **GPU inference evaluation:** Measure latency improvement on consumer GPUs to quantify the CPU→GPU speedup for OVMS LLM serving
 
 ---
 
