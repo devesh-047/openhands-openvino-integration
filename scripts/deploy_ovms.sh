@@ -23,7 +23,7 @@ source_env
 OVMS_IMAGE="${OVMS_IMAGE:-openvino/model_server:latest}"
 OVMS_REST_PORT="${OVMS_REST_PORT:-8000}"
 OVMS_GRPC_PORT="${OVMS_GRPC_PORT:-9000}"
-MODEL_DIR="${MODEL_DIR:-${PROJECT_ROOT}/docker/models/qwen2.5-7b-instruct}"
+MODEL_DIR="${MODEL_DIR:-${PROJECT_ROOT}/docker/models/qwen2.5-0.5b-instruct}"
 CONFIG_FILE="${PROJECT_ROOT}/configs/ovms_config.json"
 CONTAINER_NAME="${CONTAINER_NAME:-ovms-llm}"
 DOCKER_NETWORK="${DOCKER_NETWORK:-ovms-net}"

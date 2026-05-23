@@ -15,7 +15,7 @@ docker run -d \
     --name openhands \
     -p 3000:3000 \
     -e LLM_BASE_URL="http://host.docker.internal:8000/v3" \
-    -e LLM_MODEL="openai/qwen2.5-7b-instruct" \
+    -e LLM_MODEL="openai/qwen2.5-0.5b-instruct" \
     -e LLM_API_KEY="unused" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     ghcr.io/all-hands-ai/openhands:latest
@@ -27,7 +27,7 @@ Create or modify `~/.openhands/config.toml`:
 
 ```toml
 [llm]
-model = "openai/qwen2.5-7b-instruct"
+model = "openai/qwen2.5-0.5b-instruct"
 base_url = "http://host.docker.internal:8000/v3"
 api_key = "unused"
 ```
@@ -48,7 +48,7 @@ If OpenHands runs directly on the host (not in Docker):
 
 ### `LLM_MODEL`
 
-Must exactly match the model name specified in `ovms_config.json`, but **prefixed with `openai/`** so that OpenHands properly routes the request. For example: `openai/qwen2.5-7b-instruct`. Case-sensitive. There is no model discovery endpoint; the name must be known in advance.
+Must exactly match the model name specified in `ovms_config.json`, but **prefixed with `openai/`** so that OpenHands properly routes the request. For this repository as checked in, use `openai/qwen2.5-0.5b-instruct`. Case-sensitive. There is no model discovery endpoint; the name must be known in advance.
 
 ### `LLM_API_KEY`
 
@@ -70,7 +70,7 @@ To confirm the connection independently:
 curl -s http://localhost:8000/v3/chat/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "qwen2.5-7b-instruct",
+        "model": "qwen2.5-0.5b-instruct",
         "messages": [{"role": "user", "content": "Hello"}],
         "max_tokens": 32
     }' | python3 -m json.tool

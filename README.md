@@ -149,11 +149,21 @@ Full feature matrix with impact analysis: [`docs/openai_compatibility_notes.md`]
 
 | Requirement | Minimum | Notes |
 |---|---|---|
-| OS | Ubuntu 20.04+ or WSL2 | Tested on WSL2 (Windows 11) |
-| Docker | Engine 24+ | GPU image used for LLM support |
+| OS | Ubuntu 20.04+ or WSL2 | Tested on Ubuntu and WSL2 (Windows 11) |
+| Docker | Engine 24+ | Docker CLI must work without `sudo` for the startup scripts |
 | Python | 3.10+ | 3.12 recommended for latest libs |
 | RAM | 8 GB | 16 GB recommended for larger models |
 | Disk | 10 GB free | Model + Docker images |
+
+On Ubuntu, make sure your user can access the Docker daemon before running the setup scripts:
+
+```bash
+sudo usermod -aG docker "$USER"
+newgrp docker
+docker ps
+```
+
+If `docker ps` still fails, log out and back in, then try again.
 
 ---
 
@@ -198,7 +208,9 @@ chmod +x scripts/deploy_ovms.sh
 bash scripts/deploy_ovms.sh
 ```
 
-The script creates a Docker network (`ovms-net`), starts the container with the model mounted, and polls the `/v1/config` endpoint until the model reports `AVAILABLE`. This takes 30–90 seconds.
+The script creates a Docker network (`ovms-net`), starts the OVMS container with the model mounted, and polls the `/v1/config` endpoint until the model reports `AVAILABLE`. This takes 30–90 seconds.
+
+If you see a permission error like `permission denied while trying to connect to the docker API`, fix Docker access first or run the command with `sudo` as a temporary workaround.
 
 ### 4. Launch OpenHands
 
@@ -207,13 +219,26 @@ bash scripts/start_openhands.sh
 ```
 
 The script:
-- Finds the OVMS container IP and sets `LLM_BASE_URL` to use the `ovms-llm` DNS name
-- Writes the correct settings to `.openhands/settings.json` (prevents browser-cached overrides)
+- Reads the OVMS container on the `ovms-net` Docker network and points OpenHands at it using `http://ovms-llm:8000/v3`
+- Writes the correct settings to `~/.openhands-ovms/settings.json` so browser-cached overrides do not win
 - Cleans up orphaned runtime sandbox containers from earlier sessions
 - Starts the OpenHands container connected to `ovms-net`
 - Caps each agent sandbox at 1.5 GB to protect OVMS memory
 
 Open `http://localhost:3000` in your browser.
+
+If your user is not in the Docker group, `bash scripts/start_openhands.sh` will fail with the same Docker socket permission error. Add the user to the group and restart your session, or run the script with `sudo` as a short-term workaround.
+
+### Ubuntu quick start
+
+For a clean Ubuntu setup, run the following in order after cloning the repo and activating `.venv`:
+
+```bash
+bash scripts/deploy_ovms.sh
+bash scripts/start_openhands.sh
+```
+
+Then open `http://localhost:3000` and start a new conversation.
 
 ---
 
