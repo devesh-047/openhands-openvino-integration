@@ -12,6 +12,7 @@ build/
 .venv/
 venv/
 env/
+ov_venv/
 
 # Environment variables (user-local config)
 configs/.env
@@ -37,6 +38,8 @@ docker/logs/
 # Logs and debug output (scratch files)
 *.log
 *.log.*
+!benchmarks/tested_models.log
+benchmarks/latest_session.json
 logs/
 logs_*.txt
 model_load_logs.txt

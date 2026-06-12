@@ -15,9 +15,16 @@ node: {
   }
   node_options: {
       [type.googleapis.com / mediapipe.LLMCalculatorOptions]: {
-          models_path: "/models/qwen2.5-0.5b-instruct"
-          cache_size: 1
-          max_num_batched_tokens: 256
+          models_path: "/models/qwen2.5-7b-instruct-int8"
+          cache_size: 4
+          max_num_batched_tokens: 2048
+          enable_prefix_caching: true
+          device: "CPU"
+          
+          # --- Added for Tool Calling ---
+          tool_parser: "qwen3coder"
+          enable_tool_guided_generation: true
+          reasoning_parser: "qwen3"
       }
   }
   input_stream_handler {

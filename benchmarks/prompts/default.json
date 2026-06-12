@@ -1,0 +1,42 @@
+[
+  {
+    "id": "binary_search",
+    "category": "coding",
+    "prompt": "Write a Python binary search implementation that returns the index of a target value or -1 if it is not found. Include type hints and a short docstring."
+  },
+  {
+    "id": "stack_tests",
+    "category": "testing",
+    "prompt": "Write pytest tests for a Stack class with push, pop, peek, and is_empty methods. Cover normal behavior and edge cases."
+  },
+  {
+    "id": "json_parser",
+    "category": "coding",
+    "prompt": "Write a Python function that parses a JSON string into a dictionary and raises a clear ValueError when the input is invalid."
+  },
+  {
+    "id": "retry_helper",
+    "category": "engineering",
+    "prompt": "Write a Python helper that retries a function up to three times with exponential backoff. Keep it dependency-free and easy to read."
+  },
+  {
+    "id": "log_summary",
+    "category": "analysis",
+    "prompt": "Write Python code that reads a log file and returns the most common warning message and the number of times it appears."
+  },
+  {
+    "id": "text_deduplication",
+    "category": "coding",
+    "prompt": "Write a Python function that deduplicates a list of strings while preserving the original order. Explain the time complexity briefly."
+  },
+  {
+    "id": "stack_trace_formatter",
+    "category": "debugging",
+    "prompt": "Write a Python function that formats an exception stack trace into a short, readable summary for a CLI tool."
+  },
+  {
+    "id": "fast_average",
+    "category": "math",
+    "prompt": "Write a Python function that computes the average of a list of numbers and returns 0.0 for an empty list. Include input validation."
+  }
+]

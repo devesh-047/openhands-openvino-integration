@@ -1,0 +1,31 @@
+{
+  "workflow": "openhands-v1-conversation-benchmark",
+  "benchmark_version": "1.0",
+  "model_name": "qwen2.5-7b-instruct-int8",
+  "prompt_dataset": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/prompts/default.json",
+  "prompt_dataset_hash": "c62d750eeb2f0b1d352c181f251239dcb1546f7298202dc44e6597343df6e8f1",
+  "created_at": "2026-06-03T12:26:14",
+  "results": [
+    {
+      "id": "binary_search",
+      "category": "coding",
+      "prompt": "Write a Python binary search implementation that returns the index of a target value or -1 if it is not found. Include type hints and a short docstring.",
+      "model_name": "qwen2.5-7b-instruct-int8",
+      "started_at": "2026-06-03T12:26:22",
+      "api_status": "ok",
+      "conversation_id": "45a47277af0742c7b6894e2a5260e5d9",
+      "status": "RUNNING",
+      "runtime_status": "STATUS$READY",
+      "ready_seconds": 60.1789,
+      "settle_seconds": 602.2895,
+      "event_count": 14,
+      "assistant_reply": "Missing required parameters for function 'str_replace_editor': {'security_risk'}",
+      "timed_out": true,
+      "error": null,
+      "response_length": 80,
+      "quality_score": 0.2625,
+      "success": false,
+      "event_timeline": "agent | agent | agent | agent | agent | agent"
+    }
+  ]
+}

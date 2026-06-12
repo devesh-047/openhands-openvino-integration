@@ -1,0 +1,9 @@
+[llm]
+model = "openai/qwen2.5-coder-7b-instruct-int8"
+base_url = "http://localhost:8000/v3"
+api_key = "dummy-key"
+embedding_model = "local"
+
+[core]
+workspace_base = "./workspace"
+max_iterations = 50

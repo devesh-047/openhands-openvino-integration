@@ -1,0 +1,29 @@
+{
+  "workflow": "openhands-v1-conversation-benchmark",
+  "benchmark_version": "1.0",
+  "model_name": "qwen2.5-coder-14b-instruct-int4-ov",
+  "session_dir": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/qwen2.5-coder-14b-instruct-int4-ov_20260603_113710",
+  "prompt_dataset": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/prompts/default.json",
+  "prompt_dataset_hash": "c62d750eeb2f0b1d352c181f251239dcb1546f7298202dc44e6597343df6e8f1",
+  "openhands_version": "unknown",
+  "start_py_version": "3.12.3",
+  "created_at": "2026-06-03T11:37:10",
+  "completed_at": "2026-06-03T11:37:12",
+  "prompt_count": 0,
+  "successful_requests": 0,
+  "success_rate": 0.0,
+  "avg_quality_score": 0.0,
+  "avg_ready_seconds": null,
+  "avg_settle_seconds": null,
+  "avg_response_length": null,
+  "hardware": "Linux 6.17.0-29-generic / x86_64 / x86_64",
+  "resource_metrics": {
+    "cpu_peak_percent": 0.0,
+    "memory_peak_mb": 0.0,
+    "avg_cpu_percent": 0.0,
+    "avg_memory_mb": 0.0
+  },
+  "top_prompt": null,
+  "worst_prompt": null,
+  "error": "OpenHands is not reachable at http://localhost:3000"
+}

@@ -1,0 +1,29 @@
+{
+  "workflow": "openhands-v1-conversation-benchmark",
+  "benchmark_version": "1.0",
+  "model_name": "qwen2.5-7b-instruct-int8",
+  "session_dir": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/qwen2.5-7b-instruct-int8_20260603_122002",
+  "prompt_dataset": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/prompts/default.json",
+  "prompt_dataset_hash": "c62d750eeb2f0b1d352c181f251239dcb1546f7298202dc44e6597343df6e8f1",
+  "openhands_version": "unknown",
+  "start_py_version": "3.12.3",
+  "created_at": "2026-06-03T12:20:02",
+  "completed_at": "2026-06-03T12:22:11",
+  "prompt_count": 0,
+  "successful_requests": 0,
+  "success_rate": 0.0,
+  "avg_quality_score": 0.0,
+  "avg_ready_seconds": null,
+  "avg_settle_seconds": null,
+  "avg_response_length": null,
+  "hardware": "Linux 6.17.0-29-generic / x86_64 / x86_64",
+  "resource_metrics": {
+    "cpu_peak_percent": 586.08,
+    "memory_peak_mb": 10550.9353,
+    "avg_cpu_percent": 262.0562,
+    "avg_memory_mb": 4582.2253
+  },
+  "top_prompt": null,
+  "worst_prompt": null,
+  "error": "Benchmark interrupted by user."
+}

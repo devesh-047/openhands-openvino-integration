@@ -2,8 +2,8 @@
     "model_config_list": [],
     "mediapipe_config_list": [
         {
-            "name": "qwen2.5-0.5b-instruct",
-            "base_path": "/models/qwen2.5-0.5b-instruct"
+            "name": "qwen3-14b-int8-ov",
+            "base_path": "/models/OpenVINO/Qwen3-14b-int8-ov"
         }
     ]
 }

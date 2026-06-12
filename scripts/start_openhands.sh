@@ -26,7 +26,7 @@ OPENHANDS_PORT="${OPENHANDS_PORT:-3000}"
 OPENHANDS_CONTAINER="${OPENHANDS_CONTAINER:-openhands}"
 OVMS_CONTAINER="${OVMS_CONTAINER:-ovms-llm}"
 OVMS_REST_PORT="${OVMS_REST_PORT:-8000}"
-LLM_MODEL="${LLM_MODEL:-openai/qwen2.5-0.5b-instruct}"
+LLM_MODEL="${LLM_MODEL:-openai/qwen3-14b-int8-ov}"
 LLM_API_KEY="${LLM_API_KEY:-unused}"
 
 # Settings directory mounted into the container so settings always persist
@@ -47,7 +47,7 @@ if [[ -z "$OVMS_IP" ]]; then
     exit 1
 fi
 
-LLM_BASE_URL="http://${OVMS_CONTAINER}:${OVMS_REST_PORT}/v3"
+LLM_BASE_URL="http://${OVMS_IP}:${OVMS_REST_PORT}/v3"
 
 echo "OVMS container : $OVMS_CONTAINER"
 echo "OVMS IP        : $OVMS_IP"
@@ -110,6 +110,7 @@ docker run -d \
     --name "$OPENHANDS_CONTAINER" \
     --network ovms-net \
     -p "${OPENHANDS_PORT}:3000" \
+    --add-host host.docker.internal:host-gateway \
     -e LLM_BASE_URL="$LLM_BASE_URL" \
     -e LLM_MODEL="$LLM_MODEL" \
     -e LLM_API_KEY="$LLM_API_KEY" \

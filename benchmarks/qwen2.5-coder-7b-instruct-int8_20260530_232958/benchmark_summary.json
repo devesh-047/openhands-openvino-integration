@@ -1,0 +1,42 @@
+{
+  "workflow": "openhands-v1-conversation-benchmark",
+  "benchmark_version": "1.0",
+  "model_name": "qwen2.5-coder-7b-instruct-int8",
+  "session_dir": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/qwen2.5-coder-7b-instruct-int8_20260530_232958",
+  "prompt_dataset": "/home/devesh-047/projects/openhands-openvino-integration/benchmarks/prompts/default.json",
+  "prompt_dataset_hash": "c62d750eeb2f0b1d352c181f251239dcb1546f7298202dc44e6597343df6e8f1",
+  "openhands_version": "unknown",
+  "start_py_version": "3.12.3",
+  "created_at": "2026-05-30T23:29:58",
+  "completed_at": "2026-05-30T23:47:22",
+  "prompt_count": 8,
+  "successful_requests": 5,
+  "success_rate": 0.625,
+  "avg_quality_score": 0.6188,
+  "avg_ready_seconds": 58.585,
+  "avg_settle_seconds": 88.4946,
+  "avg_response_length": 8026.25,
+  "hardware": "Linux 6.17.0-29-generic / x86_64 / x86_64",
+  "resource_metrics": {
+    "cpu_peak_percent": 611.45,
+    "memory_peak_mb": 9586.367,
+    "avg_cpu_percent": 521.9462,
+    "avg_memory_mb": 8586.7764
+  },
+  "top_prompt": {
+    "id": "binary_search",
+    "category": "coding",
+    "quality_score": 1.0,
+    "success": true,
+    "response_length": 12842,
+    "conversation_id": "9994250ed49148e38570e02476d8c28a"
+  },
+  "worst_prompt": {
+    "id": "retry_helper",
+    "category": "engineering",
+    "quality_score": 0.0,
+    "success": false,
+    "response_length": 0,
+    "conversation_id": null
+  }
+}
